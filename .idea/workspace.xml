@@ -64,7 +64,7 @@
       <option name="presentableId" value="Default" />
       <updated>1608655132329</updated>
       <workItem from="1608655134677" duration="317000" />
-      <workItem from="1608655456803" duration="11508000" />
+      <workItem from="1608655456803" duration="15244000" />
     </task>
     <task id="LOCAL-00001" summary="debut de le classe boid">
       <created>1608660714320</created>
@@ -73,7 +73,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608660714320</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="detection des voisins">
+      <created>1608670532302</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1608670532302</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -92,7 +99,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="debut de le classe boid" />
-    <option name="LAST_COMMIT_MESSAGE" value="debut de le classe boid" />
+    <MESSAGE value="detection des voisins" />
+    <option name="LAST_COMMIT_MESSAGE" value="detection des voisins" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

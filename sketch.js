@@ -3,7 +3,16 @@ let canvas_wight = 1000
 let canvas_height = 800
 let boids = []
 
-const influence = 100
+let influence = 100
+let separation_slider
+let separation
+let cohesion_slider
+let cohesion
+const vel_max = 5
+const vel_min = 1
+const agility = 0.1
+
+
 const bucket_size = influence * 2
 let buckets = []
 for (let i=0; i<Math.ceil(canvas_wight / bucket_size); i++)
@@ -51,6 +60,14 @@ class Boid {
     }
 
     update() {
+        this.vel = p5.Vector.lerp(this.vel, this.acc, agility)
+        this.acc.mult(0)
+
+        if (this.vel.mag() > vel_max)
+            this.vel.normalize().mult(vel_max)
+        if (this.vel.mag() < vel_min)
+            this.acc = this.vel.copy().normalize().mult(vel_min)
+
         this.pos.add(this.vel)
         this.mirror_pos()
 
@@ -87,8 +104,7 @@ class Boid {
         strokeWeight(1)
         stroke(0, 200, 0)
         neighbours.forEach(boid => {
-            if (dist(this.pos.x, this.pos.y, boid.pos.x, boid.pos.y) <= influence)
-                line(this.pos.x, this.pos.y, boid.pos.x, boid.pos.y)
+            line(this.pos.x, this.pos.y, boid.pos.x, boid.pos.y)
         })
     }
 
@@ -98,13 +114,48 @@ class Boid {
             for (let j=-1; j<=1; j++) {
                 const bucket_x = this.bucket_x + i
                 const bucket_y = this.bucket_y + j
-                if (bucket_x >= 0 && bucket_x < buckets.length && bucket_y >= 0 && bucket_y < buckets[0].length)
-                    buckets[bucket_x][bucket_y].forEach(boid => neighbours.push(boid))
+                if (bucket_x >= 0 && bucket_x < buckets.length && bucket_y >= 0 && bucket_y < buckets[0].length) {
+                    buckets[bucket_x][bucket_y].forEach(boid => {
+                        if (dist(this.pos.x, this.pos.y, boid.pos.x, boid.pos.y) <= influence)
+                            neighbours.push(boid)
+                    })
+                }
             }
         }
         return neighbours
     }
 
+    separation() {
+        const neighbours = this.get_neighbours()
+        let separation_vec = createVector(0, 0)
+        neighbours.forEach(boid => {
+            const d = dist(this.pos.x, this.pos.y, boid.pos.x, boid.pos.y)
+            let boid_vec = createVector(this.pos.x - boid.pos.x, this.pos.y - boid.pos.y).normalize().mult((1 - d / influence) * influence)
+            separation_vec.add(boid_vec)
+        })
+        separation_vec.div(neighbours.length)
+
+        separation_vec.mult(separation)
+        this.acc.add(separation_vec)
+
+        stroke(0, 250, 0)
+        strokeWeight(1)
+        line(this.pos.x, this.pos.y, this.pos.x + separation_vec.x, this.pos.y + separation_vec.y)
+    }
+
+    cohesion() {
+        const neighbours = this.get_neighbours()
+        let cohesion_vec = createVector(0, 0)
+        neighbours.forEach(boid => cohesion_vec.add(boid.pos))
+        cohesion_vec.div(neighbours.length)
+
+        cohesion_vec.sub(this.pos).mult(cohesion)
+        this.acc.add(cohesion_vec)
+
+        stroke(0, 0, 250)
+        strokeWeight(1)
+        line(this.pos.x, this.pos.y, this.pos.x + cohesion_vec.x, this.pos.y + cohesion_vec.y)
+    }
 }
 
 function setup() {
@@ -112,20 +163,28 @@ function setup() {
 
     for (let i=0; i<nb_boids; i++)
         boids.push(new Boid(createVector(int(random(canvas_wight)), int(random(canvas_height))),
-                            p5.Vector.fromAngle(random(2 * PI)).mult(2),20))
+                            p5.Vector.fromAngle(random(2 * PI)).mult(1),20))
+
+    separation_slider = createSlider(0, 100, 50);
+    cohesion_slider = createSlider(0, 100, 50);
 }
 
 function draw() {
+    separation = separation_slider.value() / 100
+    cohesion = cohesion_slider.value() / 100
+
     background(220)
 
-    draw_buckets()
+    // draw_buckets()
 
     boids.forEach(boid => {
+        boid.separation()
+        boid.cohesion()
         boid.update()
         boid.draw()
     })
 
-    draw_influences()
+    // draw_influences()
 }
 
 function draw_influences() {
