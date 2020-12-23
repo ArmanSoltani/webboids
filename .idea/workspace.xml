@@ -65,7 +65,7 @@
       <updated>1608655132329</updated>
       <workItem from="1608655134677" duration="317000" />
       <workItem from="1608655456803" duration="15389000" />
-      <workItem from="1608733334832" duration="3120000" />
+      <workItem from="1608733334832" duration="12856000" />
     </task>
     <task id="LOCAL-00001" summary="debut de le classe boid">
       <created>1608660714320</created>
@@ -88,7 +88,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608674359685</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="alignment">
+      <created>1608736494431</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1608736494431</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -110,7 +117,8 @@
     <MESSAGE value="debut de le classe boid" />
     <MESSAGE value="detection des voisins" />
     <MESSAGE value="separation et cohesion" />
-    <option name="LAST_COMMIT_MESSAGE" value="separation et cohesion" />
+    <MESSAGE value="alignment" />
+    <option name="LAST_COMMIT_MESSAGE" value="alignment" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
