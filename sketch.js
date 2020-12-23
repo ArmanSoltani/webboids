@@ -1,4 +1,4 @@
-const nb_boids = 30
+const nb_boids = 100
 let canvas_wight = 1000
 let canvas_height = 800
 let boids = []
@@ -8,26 +8,29 @@ let separation_slider
 let separation
 let cohesion_slider
 let cohesion
-const vel_max = 5
-const vel_min = 1
-const agility = 0.1
+let aligment_slider
+let aligment
+const vel_max = 10
+const vel_min = 3
+const agility = 0.01
 
 
 const bucket_size = influence * 2
 let buckets = []
-for (let i=0; i<Math.ceil(canvas_wight / bucket_size); i++)
-    buckets.push(new Array(Math.ceil(canvas_height / bucket_size)))
-for (let x=0; x<buckets.length; x++) {
-    for (let y=0; y<buckets[0].length; y++) {
-        buckets[x][y] = new Set()
-    }
+
+function drawArrow(base, vec, myColor) {
+    push();
+    stroke(myColor);
+    strokeWeight(3);
+    fill(myColor);
+    translate(base.x, base.y);
+    line(0, 0, vec.x, vec.y);
+    rotate(vec.heading());
+    let arrowSize = 7;
+    translate(vec.mag() - arrowSize, 0);
+    triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+    pop();
 }
-
-if (canvas_wight % bucket_size !== 0)
-    canvas_wight -= canvas_wight % bucket_size
-if (canvas_height % bucket_size !== 0)
-    canvas_height -= canvas_height % bucket_size
-
 
 class Boid {
     constructor(pos, vel, length) {
@@ -138,9 +141,9 @@ class Boid {
         separation_vec.mult(separation)
         this.acc.add(separation_vec)
 
-        stroke(0, 250, 0)
-        strokeWeight(1)
-        line(this.pos.x, this.pos.y, this.pos.x + separation_vec.x, this.pos.y + separation_vec.y)
+        // stroke(0, 250, 0)
+        // strokeWeight(1)
+        // line(this.pos.x, this.pos.y, this.pos.x + separation_vec.x, this.pos.y + separation_vec.y)
     }
 
     cohesion() {
@@ -152,34 +155,79 @@ class Boid {
         cohesion_vec.sub(this.pos).mult(cohesion)
         this.acc.add(cohesion_vec)
 
-        stroke(0, 0, 250)
-        strokeWeight(1)
-        line(this.pos.x, this.pos.y, this.pos.x + cohesion_vec.x, this.pos.y + cohesion_vec.y)
+        // stroke(0, 0, 250)
+        // strokeWeight(1)
+        // line(this.pos.x, this.pos.y, this.pos.x + cohesion_vec.x, this.pos.y + cohesion_vec.y)
+    }
+
+    aligment() {
+        const neighbours = this.get_neighbours()
+        let aligment_vec = createVector(0, 0)
+        neighbours.forEach(boid => aligment_vec.add(boid.vel))
+        aligment_vec.div(neighbours.length)
+
+        aligment_vec.sub(this.vel).mult(aligment)
+        this.acc.add(aligment_vec)
+
+        // drawArrow(this.pos, aligment_vec.copy().mult(10), color(250, 0, 0))
     }
 }
 
-function setup() {
-    createCanvas(canvas_wight, canvas_height)
+function reset() {
+    buckets = []
+    for (let i=0; i<Math.ceil(canvas_wight / bucket_size); i++)
+        buckets.push(new Array(Math.ceil(canvas_height / bucket_size)))
+    for (let x=0; x<buckets.length; x++) {
+        for (let y = 0; y < buckets[0].length; y++) {
+            buckets[x][y] = new Set()
+        }
+    }
 
+    boids = []
     for (let i=0; i<nb_boids; i++)
         boids.push(new Boid(createVector(int(random(canvas_wight)), int(random(canvas_height))),
-                            p5.Vector.fromAngle(random(2 * PI)).mult(1),20))
+            p5.Vector.random2D().mult(random(vel_min, vel_max)),20))
 
-    separation_slider = createSlider(0, 100, 50);
-    cohesion_slider = createSlider(0, 100, 50);
 }
+
+function setup() {
+    if (canvas_wight % bucket_size !== 0)
+        canvas_wight -= canvas_wight % bucket_size
+    if (canvas_height % bucket_size !== 0)
+        canvas_height -= canvas_height % bucket_size
+
+    createCanvas(canvas_wight, canvas_height)
+
+    textSize(15)
+    separation_slider = createSlider(0, 100, 50);
+    separation_slider.position(20, canvas_height + 20);
+    cohesion_slider = createSlider(0, 100, 20);
+    cohesion_slider.position(20, canvas_height + 50);
+    aligment_slider = createSlider(0, 100, 80);
+    aligment_slider.position(20, canvas_height + 80);
+
+    button = createButton("reset");
+    button.position(200, canvas_height + 20)
+    button.mouseClicked(() => reset())
+
+
+    reset()
+}
+
 
 function draw() {
     separation = separation_slider.value() / 100
     cohesion = cohesion_slider.value() / 100
+    aligment = aligment_slider.value() / 100
 
-    background(220)
+    background(220, 220, 220)
 
     // draw_buckets()
 
     boids.forEach(boid => {
         boid.separation()
         boid.cohesion()
+        boid.aligment()
         boid.update()
         boid.draw()
     })
