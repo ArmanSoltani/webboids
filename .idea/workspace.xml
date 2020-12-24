@@ -34,6 +34,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="full.screen.before.presentation.mode" value="false" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -65,7 +66,8 @@
       <updated>1608655132329</updated>
       <workItem from="1608655134677" duration="317000" />
       <workItem from="1608655456803" duration="15389000" />
-      <workItem from="1608733334832" duration="12856000" />
+      <workItem from="1608733334832" duration="13127000" />
+      <workItem from="1608824843890" duration="2865000" />
     </task>
     <task id="LOCAL-00001" summary="debut de le classe boid">
       <created>1608660714320</created>
@@ -95,7 +97,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608736494431</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="optimisation et champs de vision">
+      <created>1608765580333</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1608765580333</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -118,7 +127,20 @@
     <MESSAGE value="detection des voisins" />
     <MESSAGE value="separation et cohesion" />
     <MESSAGE value="alignment" />
-    <option name="LAST_COMMIT_MESSAGE" value="alignment" />
+    <MESSAGE value="optimisation et champs de vision" />
+    <option name="LAST_COMMIT_MESSAGE" value="optimisation et champs de vision" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/sketch.js</url>
+          <line>196</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

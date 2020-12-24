@@ -1,4 +1,4 @@
-const nb_boids = 1000
+const nb_boids = 100
 let canvas_wight = 1000
 let canvas_height = 800
 let boids = []
@@ -31,6 +31,9 @@ class Boid {
         buckets[this.bucket_x][this.bucket_y].add(this)
 
         this.neighbours = []
+        this.buckets_to_check = new Array(3)
+        for (let i=0; i<3; i++)
+            this.buckets_to_check[i] = new Array(3).fill(false)
     }
 
     draw() {
@@ -66,8 +69,8 @@ class Boid {
         this.pos.add(this.vel)
         this.mirror_pos()
 
-        const new_bucket_x = Math.ceil(this.pos.x / bucket_size) - 1
-        const new_bucket_y = Math.ceil(this.pos.y / bucket_size) - 1
+        const new_bucket_x = int(this.pos.x / bucket_size)
+        const new_bucket_y = int(this.pos.y / bucket_size)
         // console.log(this.pos.x, this.pos.y, new_bucket_x, new_bucket_y)
 
         if (this.bucket_x !== new_bucket_x || this.bucket_y !== new_bucket_y) {
@@ -151,36 +154,68 @@ class Boid {
         line(this.pos.x, this.pos.y, this.pos.x + this.acc.x * 30, this.pos.y + this.acc.y * 30)
     }
 
+    get_buckets() {
+        if (this.follow) {
+            stroke(0, 0, 250)
+            fill(0, 0, 250)
+            strokeWeight(1.5)
+            for (let i=-field_of_view; i<=field_of_view; i += field_of_view / 2) {
+                const ray = this.vel.copy().normalize().mult(influence).rotate(i)
+                line(this.pos.x, this.pos.y, this.pos.x + ray.x, this.pos.y + ray.y)
+                circle(this.pos.x + ray.x, this.pos.y + ray.y, 3)
+            }
+        }
+
+        for (let x=0; x<3; x++) {
+            for (let y=0; y<3; y++)
+                this.buckets_to_check[x][y] = false
+        }
+
+        this.buckets_to_check[1][1] = true
+
+        for (let i=-field_of_view; i<=field_of_view; i += field_of_view / 2) {
+            const ray = this.vel.copy().normalize().mult(influence).rotate(i)
+            const x = int((this.pos.x + ray.x) / bucket_size)
+            const y = int((this.pos.y + ray.y) / bucket_size)
+            if (x >= 0 && x < buckets.length && y >= 0 && y < buckets[0].length)
+                this.buckets_to_check[this.bucket_x - x + 1][this.bucket_y - y + 1] = true
+        }
+    }
+
+    draw_buckets() {
+        if (!this.follow)
+            return
+
+        strokeWeight(5)
+        stroke(200, 0, 0)
+        fill(0, 0, 0, 0)
+        for (let x=0; x<3; x++) {
+            for (let y=0; y<3; y++) {
+                if (this.buckets_to_check[x][y])
+                    rect((this.bucket_x + x - 1) * bucket_size, (this.bucket_y + y - 1) * bucket_size, bucket_size, bucket_size);
+            }
+        }
+    }
+
     get_neighbours() {
         this.neighbours = []
-        let buckets_to_check
-        if (this.vel.x > 0)
-            buckets_to_check = [[this.bucket_x, this.bucket_y], [this.bucket_x + 1, this.bucket_y],
-                [this.bucket_x + 1, this.bucket_y + 1], [this.bucket_x + 1, this.bucket_y - 1],
-                [this.bucket_x, this.bucket_y + 1], [this.bucket_x, this.bucket_y - 1]]
-        else
-            buckets_to_check = [[this.bucket_x, this.bucket_y], [this.bucket_x - 1, this.bucket_y],
-                [this.bucket_x - 1, this.bucket_y + 1], [this.bucket_x - 1, this.bucket_y - 1],
-                [this.bucket_x, this.bucket_y + 1], [this.bucket_x, this.bucket_y - 1]]
-
         const influence2 = influence * influence
-        buckets_to_check.forEach(bucket => {
-            const bucket_x = bucket[0]
-            const bucket_y = bucket[1]
 
-            if (bucket_x >= 0 && bucket_x < buckets.length && bucket_y >= 0 && bucket_y < buckets[0].length) {
-                buckets[bucket_x][bucket_y].forEach(boid => {
-                    if (boid === this)
-                        return
-                    const angle = this.vel.angleBetween(boid.pos.copy().sub(this.pos))
-                    if (abs(angle) <= field_of_view) {
-                        const d2 = (this.pos.x - boid.pos.x) * (this.pos.x - boid.pos.x) + (this.pos.y - boid.pos.y) * (this.pos.y - boid.pos.y)
-                        if (d2 <= influence2)
-                            this.neighbours.push({boid: boid, dist: sqrt(d2)})
-                    }
-                })
-            }
-        })
+        for (let x=0; x<3; x++) {
+            for (let y=0; y<3; y++)
+                if(this.buckets_to_check[x][y]) {
+                    buckets[this.bucket_x + x - 1][this.bucket_y + y - 1].forEach(boid => {
+                        if (boid === this)
+                            return
+                        const angle = this.vel.angleBetween(boid.pos.copy().sub(this.pos))
+                        if (abs(angle) <= field_of_view) {
+                            const d2 = (this.pos.x - boid.pos.x) * (this.pos.x - boid.pos.x) + (this.pos.y - boid.pos.y) * (this.pos.y - boid.pos.y)
+                            if (d2 <= influence2)
+                                this.neighbours.push({boid: boid, dist: sqrt(d2)})
+                        }
+                    })
+                }
+        }
     }
 
     separation() {
@@ -278,12 +313,14 @@ function draw() {
     cohesion = cohesion_slider.value() / 100
     aligment = aligment_slider.value() / 100
 
-    background(0, 0, 0, 50)
-    // background(0, 0, 0)
+    // background(0, 0, 0, 50)
+    background(0, 0, 0)
 
     // draw_buckets()
 
     boids.forEach(boid => {
+        boid.get_buckets()
+        boid.draw_buckets()
         boid.get_neighbours()
         boid.separation()
         boid.cohesion()
