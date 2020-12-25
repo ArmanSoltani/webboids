@@ -15,13 +15,15 @@ const vel_min = 3
 const agility = 0.05
 let field_of_view
 
-const bucket_size = influence * 2
+const bucket_size = 25
 let buckets = []
 
 class Boid {
-    constructor(pos, vel, length, follow) {
+    constructor(pos, vel, length, follow, color) {
+        this.color = color
         this.follow = follow
         this.pos = pos
+        this.prev_pos = pos.copy()
         this.vel = vel
         this.acc = createVector(0, 0)
         this.length = length
@@ -31,30 +33,36 @@ class Boid {
         buckets[this.bucket_x][this.bucket_y].add(this)
 
         this.neighbours = []
-        this.buckets_to_check = new Array(3)
-        for (let i=0; i<3; i++)
-            this.buckets_to_check[i] = new Array(3).fill(false)
+        this.buckets_to_check = new Set()
     }
 
-    draw() {
-        strokeWeight(0)
-        stroke(0)
-        if (this.follow)
-            fill(200, 100, 200)
-        else
-            fill(250, 250, 250)
+    draw(type="triangle") {
+        if (type === "triangle") {
+            strokeWeight(0)
+            stroke(0)
+            if (this.follow)
+                fill(200, 100, 200)
+            else
+                fill(250, 250, 250)
 
-        const dir1 = createVector(this.vel.x, this.vel.y).normalize()
-        const dir2 = createVector(dir1.x, dir1.y).rotate(PI / 2)
+            const dir1 = createVector(this.vel.x, this.vel.y).normalize()
+            const dir2 = createVector(dir1.x, dir1.y).rotate(PI / 2)
+            const x1 = this.pos.x + dir1.x * this.length
+            const y1 = this.pos.y + dir1.y * this.length
+            const x2 = this.pos.x +  dir2.x * this.length / 3
+            const y2 = this.pos.y + dir2.y * this.length / 3
+            const x3 = this.pos.x - dir2.x * this.length / 3
+            const y3 = this.pos.y - dir2.y * this.length / 3
 
-        const x1 = this.pos.x + dir1.x * this.length
-        const y1 = this.pos.y + dir1.y * this.length
-        const x2 = this.pos.x +  dir2.x * this.length / 3
-        const y2 = this.pos.y + dir2.y * this.length / 3
-        const x3 = this.pos.x - dir2.x * this.length / 3
-        const y3 = this.pos.y - dir2.y * this.length / 3
+            triangle(x1, y1, x2, y2, x3, y3)
+        }
+        else if (type === "line") {
+            strokeWeight(1)
+            stroke(this.color)
+            line(this.prev_pos.x, this.prev_pos.y, this.pos.x, this.pos.y)
 
-        triangle(x1, y1, x2, y2, x3, y3)
+            this.prev_pos = this.pos.copy()
+        }
     }
 
     update() {
@@ -71,7 +79,6 @@ class Boid {
 
         const new_bucket_x = int(this.pos.x / bucket_size)
         const new_bucket_y = int(this.pos.y / bucket_size)
-        // console.log(this.pos.x, this.pos.y, new_bucket_x, new_bucket_y)
 
         if (this.bucket_x !== new_bucket_x || this.bucket_y !== new_bucket_y) {
             buckets[this.bucket_x][this.bucket_y].delete(this)
@@ -82,14 +89,22 @@ class Boid {
     }
 
     mirror_pos() {
-        if (this.pos.x < 0)
+        if (this.pos.x < 0) {
             this.pos.x += canvas_wight
-        if (this.pos.y < 0)
+            this.prev_pos.x += canvas_wight
+        }
+        if (this.pos.y < 0) {
             this.pos.y += canvas_height
-        if (this.pos.x > canvas_wight)
+            this.prev_pos.y += canvas_height
+        }
+        if (this.pos.x > canvas_wight) {
             this.pos.x -= canvas_wight
-        if (this.pos.y > canvas_height)
+            this.prev_pos.x -= canvas_wight
+        }
+        if (this.pos.y > canvas_height) {
             this.pos.y -= canvas_height
+            this.prev_pos.y -= canvas_height
+        }
     }
 
     draw_influences() {
@@ -155,30 +170,35 @@ class Boid {
     }
 
     get_buckets() {
-        if (this.follow) {
-            stroke(0, 0, 250)
-            fill(0, 0, 250)
-            strokeWeight(1.5)
-            for (let i=-field_of_view; i<=field_of_view; i += field_of_view / 2) {
-                const ray = this.vel.copy().normalize().mult(influence).rotate(i)
-                line(this.pos.x, this.pos.y, this.pos.x + ray.x, this.pos.y + ray.y)
-                circle(this.pos.x + ray.x, this.pos.y + ray.y, 3)
-            }
-        }
+        const ray_angle = bucket_size / influence
 
-        for (let x=-1; x<=1; x++) {
-            for (let y=-1; y<=1; y++)
-                this.buckets_to_check[x+1][y+1] = false
-        }
+        // if (this.follow) {
+        //     stroke(0, 0, 250)
+        //     fill(0, 0, 250)
+        //     strokeWeight(1.5)
+        //     for (let i=-field_of_view; i<=field_of_view + field_of_view % ray_angle; i += ray_angle) {
+        //         const ray = this.vel.copy().normalize().rotate(i).mult(bucket_size)
+        //         let ray_end = createVector(0, 0)
+        //         for (let j=1; j*bucket_size <= influence + influence % bucket_size; j++) {
+        //             ray_end.add(ray);
+        //             line(this.pos.x, this.pos.y, this.pos.x + ray_end.x, this.pos.y + ray_end.y)
+        //             circle(this.pos.x + ray_end.x, this.pos.y + ray_end.y, 3)
+        //         }
+        //     }
+        // }
 
-        this.buckets_to_check[1][1] = true
+        this.buckets_to_check.clear()
 
-        for (let i=-field_of_view; i<=field_of_view; i += field_of_view / 2) {
-            const ray = this.vel.copy().normalize().mult(influence).rotate(i)
-            const x = int((this.pos.x + ray.x) / bucket_size)
-            const y = int((this.pos.y + ray.y) / bucket_size)
-            if (x >= 0 && x < buckets.length && y >= 0 && y < buckets[0].length) {
-                this.buckets_to_check[x - this.bucket_x + 1][y - this.bucket_y + 1] = true
+        for (let i=-field_of_view; i<=field_of_view + field_of_view % ray_angle; i += ray_angle) {
+            const ray = this.vel.copy().normalize().rotate(i).mult(bucket_size)
+            let ray_end = createVector(0, 0)
+            for (let j=1; j*bucket_size <= influence + influence % bucket_size; j++) {
+                ray_end.add(ray);
+                const x = int((this.pos.x + ray_end.x) / bucket_size)
+                const y = int((this.pos.y + ray_end.y) / bucket_size)
+                if (x >= 0 && x < buckets.length && y >= 0 && y < buckets[0].length) {
+                    this.buckets_to_check.add({x, y})
+                }
             }
         }
     }
@@ -190,33 +210,27 @@ class Boid {
         strokeWeight(5)
         stroke(200, 0, 0)
         fill(0, 0, 0, 0)
-        for (let x=-1; x<=1; x++) {
-            for (let y=-1; y<=1; y++) {
-                if (this.buckets_to_check[x+1][y+1])
-                    rect((this.bucket_x + x) * bucket_size, (this.bucket_y + y) * bucket_size, bucket_size, bucket_size);
-            }
-        }
+        this.buckets_to_check.forEach(coord => {
+            rect(coord.x * bucket_size, coord.y * bucket_size, bucket_size, bucket_size)
+        })
     }
 
     get_neighbours() {
         this.neighbours = []
         const influence2 = influence * influence
 
-        for (let x=-1; x<=1; x++) {
-            for (let y=-1; y<=1; y++)
-                if(this.buckets_to_check[x+1][y+1]) {
-                    buckets[this.bucket_x + x][this.bucket_y + y].forEach(boid => {
-                        if (boid === this)
-                            return
-                        const angle = this.vel.angleBetween(boid.pos.copy().sub(this.pos))
-                        if (abs(angle) <= field_of_view) {
-                            const d2 = (this.pos.x - boid.pos.x) * (this.pos.x - boid.pos.x) + (this.pos.y - boid.pos.y) * (this.pos.y - boid.pos.y)
-                            if (d2 <= influence2)
-                                this.neighbours.push({boid: boid, dist: sqrt(d2)})
-                        }
-                    })
+        this.buckets_to_check.forEach(coord => {
+            buckets[coord.x][coord.y].forEach(boid => {
+                if (boid === this)
+                    return
+                const angle = this.vel.angleBetween(boid.pos.copy().sub(this.pos))
+                if (abs(angle) <= field_of_view) {
+                    const d2 = (this.pos.x - boid.pos.x) * (this.pos.x - boid.pos.x) + (this.pos.y - boid.pos.y) * (this.pos.y - boid.pos.y)
+                    if (d2 <= influence2)
+                        this.neighbours.push({boid: boid, dist: sqrt(d2)})
                 }
-        }
+            })
+        })
     }
 
     separation() {
@@ -263,6 +277,10 @@ class Boid {
     }
 }
 
+function get_random_color_between(color1, color2) {
+    return lerpColor(color1, color2, random())
+}
+
 function reset() {
     buckets = []
     for (let i=0; i<Math.ceil(canvas_wight / bucket_size); i++)
@@ -273,12 +291,15 @@ function reset() {
         }
     }
 
+    const color1 = color(224, 170, 99)
+    const color2 = color(113, 184, 83)
+
     boids = []
     boids.push(new Boid(createVector(int(random(canvas_wight)), int(random(canvas_height))),
-        p5.Vector.random2D().mult(random(vel_min, vel_max)),20, true))
+        p5.Vector.random2D().mult(random(vel_min, vel_max)),20, true, get_random_color_between(color1, color2)))
     for (let i=0; i<nb_boids-1; i++)
         boids.push(new Boid(createVector(int(random(canvas_wight)), int(random(canvas_height))),
-            p5.Vector.random2D().mult(random(vel_min, vel_max)),10, false))
+            p5.Vector.random2D().mult(random(vel_min, vel_max)),10, false, get_random_color_between(color1, color2)))
 }
 
 
@@ -306,6 +327,7 @@ function setup() {
     field_of_view = radians(90)
 
     reset()
+    background(10)
 }
 
 
@@ -314,8 +336,7 @@ function draw() {
     cohesion = cohesion_slider.value() / 100
     aligment = aligment_slider.value() / 100
 
-    // background(0, 0, 0, 10)
-    // background(0, 0, 0, 50)
+    // background(10, 10, 10, 5)
     background(0, 0, 0)
 
     // draw_buckets()
@@ -330,15 +351,21 @@ function draw() {
         // boid.draw_vel()
         // boid.draw_acc()
         boid.update()
-        boid.draw()
-        boid.draw_influences()
+        boid.draw("triangle")
+        // boid.draw_influences()
         // boid.draw_separation()
         // boid.draw_coherence()
         // boid.draw_alignment()
     })
 
+    stroke(200)
+    fill(10)
+    rect(0, 0, 100, 40)
     textSize(20)
-    text(frameRate(), 25, 25)
+    stroke(200)
+    fill(200)
+    strokeWeight(1)
+    text(round(frameRate(), 2), 25, 25)
 }
 
 
