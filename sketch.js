@@ -1,4 +1,4 @@
-const nb_boids = 100
+const nb_boids = 1000
 let canvas_wight = 1000
 let canvas_height = 800
 let boids = []
@@ -166,9 +166,9 @@ class Boid {
             }
         }
 
-        for (let x=0; x<3; x++) {
-            for (let y=0; y<3; y++)
-                this.buckets_to_check[x][y] = false
+        for (let x=-1; x<=1; x++) {
+            for (let y=-1; y<=1; y++)
+                this.buckets_to_check[x+1][y+1] = false
         }
 
         this.buckets_to_check[1][1] = true
@@ -177,8 +177,9 @@ class Boid {
             const ray = this.vel.copy().normalize().mult(influence).rotate(i)
             const x = int((this.pos.x + ray.x) / bucket_size)
             const y = int((this.pos.y + ray.y) / bucket_size)
-            if (x >= 0 && x < buckets.length && y >= 0 && y < buckets[0].length)
-                this.buckets_to_check[this.bucket_x - x + 1][this.bucket_y - y + 1] = true
+            if (x >= 0 && x < buckets.length && y >= 0 && y < buckets[0].length) {
+                this.buckets_to_check[x - this.bucket_x + 1][y - this.bucket_y + 1] = true
+            }
         }
     }
 
@@ -189,10 +190,10 @@ class Boid {
         strokeWeight(5)
         stroke(200, 0, 0)
         fill(0, 0, 0, 0)
-        for (let x=0; x<3; x++) {
-            for (let y=0; y<3; y++) {
-                if (this.buckets_to_check[x][y])
-                    rect((this.bucket_x + x - 1) * bucket_size, (this.bucket_y + y - 1) * bucket_size, bucket_size, bucket_size);
+        for (let x=-1; x<=1; x++) {
+            for (let y=-1; y<=1; y++) {
+                if (this.buckets_to_check[x+1][y+1])
+                    rect((this.bucket_x + x) * bucket_size, (this.bucket_y + y) * bucket_size, bucket_size, bucket_size);
             }
         }
     }
@@ -201,10 +202,10 @@ class Boid {
         this.neighbours = []
         const influence2 = influence * influence
 
-        for (let x=0; x<3; x++) {
-            for (let y=0; y<3; y++)
-                if(this.buckets_to_check[x][y]) {
-                    buckets[this.bucket_x + x - 1][this.bucket_y + y - 1].forEach(boid => {
+        for (let x=-1; x<=1; x++) {
+            for (let y=-1; y<=1; y++)
+                if(this.buckets_to_check[x+1][y+1]) {
+                    buckets[this.bucket_x + x][this.bucket_y + y].forEach(boid => {
                         if (boid === this)
                             return
                         const angle = this.vel.angleBetween(boid.pos.copy().sub(this.pos))
@@ -313,6 +314,7 @@ function draw() {
     cohesion = cohesion_slider.value() / 100
     aligment = aligment_slider.value() / 100
 
+    // background(0, 0, 0, 10)
     // background(0, 0, 0, 50)
     background(0, 0, 0)
 
@@ -329,7 +331,7 @@ function draw() {
         // boid.draw_acc()
         boid.update()
         boid.draw()
-        // boid.draw_influences()
+        boid.draw_influences()
         // boid.draw_separation()
         // boid.draw_coherence()
         // boid.draw_alignment()
