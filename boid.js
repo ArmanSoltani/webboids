@@ -13,7 +13,7 @@ class Boid {
         this.buckets = buckets
         this.bucket_x = int(this.position.x / config.bucket_size)
         this.bucket_y = int(this.position.y / config.bucket_size)
-        this.buckets[this.bucket_x][this.bucket_y].add(this)
+        this.buckets[this.bucket_x][this.bucket_y].boids.add(this)
 
         this.neighbours = []
         this.buckets_to_check = new Set()
@@ -62,11 +62,12 @@ class Boid {
 
         this.mirror_pos()
 
+        // Si le boid change de bucket alors on update la liste des boids des buckets du "word"
         const new_bucket_x = int(this.position.x / this.config.bucket_size)
         const new_bucket_y = int(this.position.y / this.config.bucket_size)
         if (this.bucket_x !== new_bucket_x || this.bucket_y !== new_bucket_y) {
-            this.buckets[this.bucket_x][this.bucket_y].delete(this)
-            this.buckets[new_bucket_x][new_bucket_y].add(this)
+            this.buckets[this.bucket_x][this.bucket_y].boids.delete(this)
+            this.buckets[new_bucket_x][new_bucket_y].boids.add(this)
             this.bucket_x = new_bucket_x
             this.bucket_y = new_bucket_y
         }
@@ -76,10 +77,18 @@ class Boid {
         this.align()
         this.cohesion()
         this.separation()
+        this.hunt()
 
-        this.acceleration.add(this.aligment_vec.mult(this.config.aligment_slider.value()))
-        this.acceleration.add(this.cohesion_vec.mult(this.config.cohesion_slider.value()))
-        this.acceleration.add(this.separation_vec.mult(this.config.separation_slider.value()))
+        this.aligment_vec.mult(this.config.aligment_slider.value())
+        this.cohesion_vec.mult(this.config.cohesion_slider.value())
+        this.separation_vec.mult(this.config.separation_slider.value())
+        this.hunt_vec.mult(2)
+
+        this.acceleration.add(this.aligment_vec)
+        this.acceleration.add(this.cohesion_vec)
+        this.acceleration.add(this.separation_vec)
+        this.acceleration.add(this.hunt_vec)
+
     }
 
     mirror_pos() {
@@ -123,8 +132,8 @@ class Boid {
             return
 
         strokeWeight(3)
-        stroke(0, 0, 250)
-        line(this.position.x, this.position.y, this.position.x + this.separation_vec.x * 10, this.position.y + this.separation_vec.y * 10)
+        stroke(250, 0, 0)
+        line(this.position.x, this.position.y, this.position.x + this.separation_vec.x * 100, this.position.y + this.separation_vec.y * 100)
     }
 
     draw_coherence() {
@@ -133,7 +142,7 @@ class Boid {
 
         strokeWeight(3)
         stroke(0, 250, 0)
-        line(this.position.x, this.position.y, this.position.x + this.cohesion_vec.x * 10, this.position.y + this.cohesion_vec.y * 10)
+        line(this.position.x, this.position.y, this.position.x + this.cohesion_vec.x * this.config.influence, this.position.y + this.cohesion_vec.y * this.config.influence)
     }
 
     draw_alignment() {
@@ -170,13 +179,13 @@ class Boid {
         //     stroke(0, 0, 250)
         //     fill(0, 0, 250)
         //     strokeWeight(1.5)
-        //     for (let i=-field_of_view; i<=field_of_view + field_of_view % ray_angle; i += ray_angle) {
-        //         const ray = this.vel.copy().normalize().rotate(i).mult(bucket_size)
+        //     for (let i=-this.config.field_of_view; i<=this.config.field_of_view + this.config.field_of_view % ray_angle; i += ray_angle) {
+        //         const ray = this.velocity.copy().normalize().rotate(i).mult(this.config.bucket_size)
         //         let ray_end = createVector(0, 0)
-        //         for (let j=1; j*bucket_size <= influence + influence % bucket_size; j++) {
+        //         for (let j=1; j*this.config.bucket_size <= this.config.influence + this.config.influence % this.config.bucket_size; j++) {
         //             ray_end.add(ray);
-        //             line(this.pos.x, this.pos.y, this.pos.x + ray_end.x, this.pos.y + ray_end.y)
-        //             circle(this.pos.x + ray_end.x, this.pos.y + ray_end.y, 3)
+        //             line(this.position.x, this.position.y, this.position.x + ray_end.x, this.position.y + ray_end.y)
+        //             circle(this.position.x + ray_end.x, this.position.y + ray_end.y, 3)
         //         }
         //     }
         // }
@@ -191,7 +200,8 @@ class Boid {
                 const x = int((this.position.x + ray_end.x) / this.config.bucket_size)
                 const y = int((this.position.y + ray_end.y) / this.config.bucket_size)
                 if (x >= 0 && x < this.buckets.length && y >= 0 && y < this.buckets[0].length) {
-                    this.buckets_to_check.add({x, y})
+                    if (this.buckets[x][y].total > 0)
+                        this.buckets_to_check.add({x, y})
                 }
             }
         }
@@ -214,7 +224,7 @@ class Boid {
         const influence2 = this.config.influence * this.config.influence
 
         this.buckets_to_check.forEach(coord => {
-            this.buckets[coord.x][coord.y].forEach(boid => {
+            this.buckets[coord.x][coord.y].boids.forEach(boid => {
                 if (boid === this)
                     return
                 const angle = this.velocity.angleBetween(boid.position.copy().sub(this.position))
@@ -228,48 +238,118 @@ class Boid {
     }
 
     separation() {
-        this.separation_vec = createVector()
-        if (this.neighbours.length === 0)
-            return
+        this.separation_vec = createVector(0, 0)
 
-        this.neighbours.forEach(neighbour => {
-            const {boid, dist} = neighbour
-            let diff = p5.Vector.sub(this.position, boid.position)
-            diff.mult(1 - dist)
+        let n = 0
+        this.buckets_to_check.forEach(coord => {
+            const bucket = this.buckets[coord.x][coord.y]
+
+            let nb_boids_in_bucket = bucket.total
+            if (coord.x === this.bucket_x && coord.y === this.bucket_y)
+                nb_boids_in_bucket--
+            if (nb_boids_in_bucket <= 0)
+                return
+
+            let diff = p5.Vector.sub(this.position, bucket.pos_mean)
+
+            let d = (this.position.x - bucket.pos_mean.x) * (this.position.x - bucket.pos_mean.x) +
+                    (this.position.y - bucket.pos_mean.y) * (this.position.y - bucket.pos_mean.y)
+
+            diff.div(d)
+            diff.mult(nb_boids_in_bucket)
+
             this.separation_vec.add(diff)
-        })
-        this.separation_vec.div(this.neighbours.length)
 
-        this.separation_vec.sub(this.velocity).limit(this.config.max_force)
+            n += nb_boids_in_bucket
+        })
+        if (n !== 0) {
+            this.separation_vec.div(n)
+            this.separation_vec.setMag(this.config.max_speed)
+            this.separation_vec.sub(this.velocity)
+            this.separation_vec.limit(this.config.max_force)
+
+        }
     }
 
     cohesion() {
-        this.cohesion_vec = createVector()
-        if (this.neighbours.length === 0)
-            return
+        this.cohesion_vec = createVector(0, 0)
 
-        this.neighbours.forEach(neighbour => {
-            const boid = neighbour.boid
-            this.cohesion_vec.add(boid.position)
+        let n = 0
+        this.buckets_to_check.forEach(coord => {
+            const bucket = this.buckets[coord.x][coord.y]
+
+            let nb_boids_in_bucket = bucket.total
+            if (coord.x === this.bucket_x && coord.y === this.bucket_y)
+                nb_boids_in_bucket--
+            if (nb_boids_in_bucket === 0)
+                return
+
+            this.cohesion_vec.add(p5.Vector.mult(bucket.pos_mean, nb_boids_in_bucket))
+
+            n += nb_boids_in_bucket
         })
+        if (n !== 0) {
+            this.cohesion_vec.div(n)
+            this.cohesion_vec.sub(this.position)
+            this.cohesion_vec.setMag(this.config.max_speed)
+            this.cohesion_vec.sub(this.velocity)
+            this.cohesion_vec.limit(this.config.max_force)
+        }
 
-        this.cohesion_vec.div(this.neighbours.length)
-
-        this.cohesion_vec.sub(this.position).setMag(this.config.max_speed).sub(this.velocity).limit(this.config.max_force)
     }
 
     align() {
-        this.aligment_vec = createVector()
-        if (this.neighbours.length === 0)
-            return
+        this.aligment_vec = createVector(0, 0)
 
-        this.neighbours.forEach(neighbour => {
-            const boid = neighbour.boid
-            this.aligment_vec.add(boid.velocity)
+        let n = 0
+        this.buckets_to_check.forEach(coord => {
+            const bucket = this.buckets[coord.x][coord.y]
+
+            let nb_boids_in_bucket = bucket.total
+            if (coord.x === this.bucket_x && coord.y === this.bucket_y)
+                nb_boids_in_bucket--
+            if (nb_boids_in_bucket === 0)
+                return
+
+            this.aligment_vec.add(p5.Vector.mult(bucket.vel_mean, nb_boids_in_bucket))
+
+            n += nb_boids_in_bucket
         })
-        this.aligment_vec.div(this.neighbours.length)
+        if (n !== 0) {
+            this.aligment_vec.div(n)
+            this.aligment_vec.setMag(this.config.max_speed)
+            this.aligment_vec.sub(this.velocity)
+            this.aligment_vec.limit(this.config.max_force)
+        }
+    }
 
-        this.aligment_vec.setMag(this.config.max_speed).sub(this.velocity).limit(this.config.max_force)
+    hunt() {
+        this.hunt_vec = createVector(0, 0)
+
+        let n = 0
+        this.buckets_to_check.forEach(coord => {
+            const bucket = this.buckets[coord.x][coord.y]
+            if (bucket.food === null)
+                return
+
+            if (coord.x === this.bucket_x && coord.y === this.bucket_y &&
+                dist(this.position.x, this.position.y, bucket.food.pos.x, bucket.food.pos.y) < 10) {
+                    bucket.food.nb--
+                    if (bucket.food.nb <= 0)
+                        bucket.food = null
+            }
+            else {
+                this.hunt_vec.add(bucket.food.pos)
+                n++
+            }
+        })
+        if (n !== 0) {
+            this.hunt_vec.div(n)
+            this.hunt_vec.sub(this.position)
+            this.hunt_vec.setMag(this.config.max_speed)
+            this.hunt_vec.sub(this.velocity)
+            this.hunt_vec.limit(this.config.max_force)
+        }
     }
 }
 
