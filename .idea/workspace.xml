@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a279c8e0-eb22-4529-97c9-29d44004ca48" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/bucket.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boid.js" beforeDir="false" afterPath="$PROJECT_DIR$/boid.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bucket.js" beforeDir="false" afterPath="$PROJECT_DIR$/bucket.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sketch.js" beforeDir="false" afterPath="$PROJECT_DIR$/sketch.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/word.js" beforeDir="false" afterPath="$PROJECT_DIR$/word.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -77,7 +78,7 @@
       <workItem from="1609172926485" duration="11896000" />
       <workItem from="1609534791191" duration="5286000" />
       <workItem from="1612020787267" duration="16282000" />
-      <workItem from="1612044169690" duration="1836000" />
+      <workItem from="1612044169690" duration="4801000" />
     </task>
     <task id="LOCAL-00001" summary="debut de le classe boid">
       <created>1608660714320</created>
@@ -156,7 +157,14 @@
       <option name="project" value="LOCAL" />
       <updated>1612044317179</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="refacto 🦺 ajout de la classe Bucket">
+      <created>1612046439234</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1612046439234</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -186,14 +194,8 @@
     <MESSAGE value="refactoring ☕️ et fix " />
     <MESSAGE value="refactoring " />
     <MESSAGE value="ajout de source de nourriture " />
-    <option name="LAST_COMMIT_MESSAGE" value="ajout de source de nourriture " />
-  </component>
-  <component name="XDebuggerManager">
-    <watches-manager>
-      <configuration name="JavascriptDebugType">
-        <watch expression="1/d" />
-      </configuration>
-    </watches-manager>
+    <MESSAGE value="refacto  ajout de la classe Bucket" />
+    <option name="LAST_COMMIT_MESSAGE" value="refacto  ajout de la classe Bucket" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

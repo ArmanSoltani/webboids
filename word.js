@@ -8,12 +8,20 @@ class Word {
     reset() {
         background(10, 10, 10)
 
+        // création des buckets
         this.buckets = []
-        for (let i=0; i<Math.ceil(this.config.canvas_wight / this.config.bucket_size); i++)
-            this.buckets.push(new Array(Math.ceil(this.config.canvas_height / this.config.bucket_size)))
-        for (let x=0; x<this.buckets.length; x++) {
+        for (let i=0; i < Math.ceil(windowWidth / this.config.bucket_size); i++)
+            this.buckets.push(new Array(Math.ceil(windowHeight / this.config.bucket_size)))
+        for (let x=0; x < this.buckets.length; x++) {
             for (let y = 0; y < this.buckets[0].length; y++) {
-                this.buckets[x][y] = new Bucket(x, y, this.config.bucket_size, this.config.bucket_size, this.config)
+                let bucket_width = this.config.bucket_size
+                let bucket_height = this.config.bucket_size
+                if ((x+1) * this.config.bucket_size > windowWidth)
+                    bucket_width = windowWidth - x * this.config.bucket_size;
+                if ((y+1) * this.config.bucket_size > windowHeight)
+                    bucket_height = windowHeight - y * this.config.bucket_size;
+
+                this.buckets[x][y] = new Bucket(x * this.config.bucket_size, y * this.config.bucket_size, bucket_width, bucket_height, this.config)
             }
         }
 
@@ -65,7 +73,7 @@ class Word {
         })
 
         // this.draw_food()
-        this.draw_buckets()
+        // this.draw_buckets()
         // this.draw_vel_field()
     }
 

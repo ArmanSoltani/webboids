@@ -11,15 +11,16 @@ function setup() {
 
     word = new Word(config)
 
-    createCanvas(config.canvas_wight, config.canvas_height)
+    createCanvas(windowWidth, windowHeight)
 
     reset()
-    background(10)
 }
 
 function reset() {
     // reset la simulation a t = 0
     word.reset()
+
+    background(10)
 }
 
 
@@ -32,7 +33,7 @@ function draw() {
     // dessine l'état courant de la simulation
     word.draw()
 
-    draw_framerate()
+    // draw_framerate()
 }
 
 /**

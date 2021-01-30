@@ -8,7 +8,6 @@ class Config {
 
         this.influence = 50
         this.max_speed = 4
-        this.min_speed = 2
         this.max_force = 0.25
         this.field_of_view = radians(180)
 
@@ -21,13 +20,6 @@ class Config {
     }
 
     setup(reset_fn) {
-        if (this.canvas_wight % this.bucket_size !== 0)
-            this.canvas_wight -= this.canvas_wight % this.bucket_size
-        if (this.canvas_height % this.bucket_size !== 0)
-            this.canvas_height -= this.canvas_height % this.bucket_size
-
-        console.log(`using dimentions: ${this.canvas_wight} x ${this.canvas_height}`)
-
         this.separation_slider.position(20, this.canvas_height + 20);
         this.cohesion_slider.position(20, this.canvas_height + 50);
         this.aligment_slider.position(20, this.canvas_height + 80);

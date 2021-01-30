@@ -29,14 +29,15 @@ class Bucket {
         if (this.food === null && Math.random() < this.config.food_proba) {
             this.food = {
                 pos: createVector(
-                    (this.x + Math.random()) * this.widht,
-                    (this.y + Math.random()) * this.height),
+                    this.x + Math.random() * this.widht,
+                    this.y + Math.random() * this.height),
                 nb: ceil(Math.random() * 15)
             }
         }
     }
 
     draw() {
+        fill(0, 0, 0, 0)
         strokeWeight(0.25)
         stroke(200)
         rect(this.x, this.y, this.widht, this.height)
