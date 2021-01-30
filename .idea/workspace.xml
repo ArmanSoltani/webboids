@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a279c8e0-eb22-4529-97c9-29d44004ca48" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/word.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bucket.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/boid.js" beforeDir="false" afterPath="$PROJECT_DIR$/boid.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketch.js" beforeDir="false" afterPath="$PROJECT_DIR$/sketch.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/word.js" beforeDir="false" afterPath="$PROJECT_DIR$/word.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,6 +77,7 @@
       <workItem from="1609172926485" duration="11896000" />
       <workItem from="1609534791191" duration="5286000" />
       <workItem from="1612020787267" duration="16282000" />
+      <workItem from="1612044169690" duration="1836000" />
     </task>
     <task id="LOCAL-00001" summary="debut de le classe boid">
       <created>1608660714320</created>
@@ -142,7 +142,21 @@
       <option name="project" value="LOCAL" />
       <updated>1609193393511</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="refactoring 🦺">
+      <created>1612044267579</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1612044267579</updated>
+    </task>
+    <task id="LOCAL-00011" summary="ajout de source de nourriture 🍕">
+      <created>1612044317179</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1612044317179</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -170,7 +184,9 @@
     <MESSAGE value="optimisation de la recherche de voisin " />
     <MESSAGE value="bucket size plus petit afin de diminuer le nombre de voisin considere" />
     <MESSAGE value="refactoring ☕️ et fix " />
-    <option name="LAST_COMMIT_MESSAGE" value="refactoring ☕️ et fix " />
+    <MESSAGE value="refactoring " />
+    <MESSAGE value="ajout de source de nourriture " />
+    <option name="LAST_COMMIT_MESSAGE" value="ajout de source de nourriture " />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>

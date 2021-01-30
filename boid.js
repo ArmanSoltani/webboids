@@ -200,7 +200,7 @@ class Boid {
                 const x = int((this.position.x + ray_end.x) / this.config.bucket_size)
                 const y = int((this.position.y + ray_end.y) / this.config.bucket_size)
                 if (x >= 0 && x < this.buckets.length && y >= 0 && y < this.buckets[0].length) {
-                    if (this.buckets[x][y].total > 0)
+                    if (this.buckets[x][y].boids.size > 0)
                         this.buckets_to_check.add({x, y})
                 }
             }
@@ -215,7 +215,8 @@ class Boid {
         stroke(200, 0, 0)
         fill(0, 0, 0, 0)
         this.buckets_to_check.forEach(coord => {
-            rect(coord.x * this.config.bucket_size, coord.y * this.config.bucket_size, this.config.bucket_size, this.config.bucket_size)
+            this.buckets[coord.x][coord.y].draw()
+            // rect(coord.x * this.config.bucket_size, coord.y * this.config.bucket_size, this.config.bucket_size, this.config.bucket_size)
         })
     }
 
@@ -244,7 +245,7 @@ class Boid {
         this.buckets_to_check.forEach(coord => {
             const bucket = this.buckets[coord.x][coord.y]
 
-            let nb_boids_in_bucket = bucket.total
+            let nb_boids_in_bucket = bucket.boids.size
             if (coord.x === this.bucket_x && coord.y === this.bucket_y)
                 nb_boids_in_bucket--
             if (nb_boids_in_bucket <= 0)
@@ -278,7 +279,7 @@ class Boid {
         this.buckets_to_check.forEach(coord => {
             const bucket = this.buckets[coord.x][coord.y]
 
-            let nb_boids_in_bucket = bucket.total
+            let nb_boids_in_bucket = bucket.boids.size
             if (coord.x === this.bucket_x && coord.y === this.bucket_y)
                 nb_boids_in_bucket--
             if (nb_boids_in_bucket === 0)
@@ -305,7 +306,7 @@ class Boid {
         this.buckets_to_check.forEach(coord => {
             const bucket = this.buckets[coord.x][coord.y]
 
-            let nb_boids_in_bucket = bucket.total
+            let nb_boids_in_bucket = bucket.boids.size
             if (coord.x === this.bucket_x && coord.y === this.bucket_y)
                 nb_boids_in_bucket--
             if (nb_boids_in_bucket === 0)
