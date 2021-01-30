@@ -1,20 +1,22 @@
 class Config {
     constructor() {
-        this.nb_boids = 100
-        this.canvas_wight = 1000
-        this.canvas_height = 800
+        this.nb_boids = 2500
+        this.canvas_wight = windowWidth
+        this.canvas_height = windowHeight
 
-        this.bucket_size = 25
+        this.bucket_size = 30
 
-        this.influence = 100
+        this.influence = 50
         this.max_speed = 4
-        this.min_speed = 1
-        this.max_force = 0.2
+        this.min_speed = 2
+        this.max_force = 0.25
         this.field_of_view = radians(180)
 
-        this.separation_slider = createSlider(0, 5, 1, 0.1)
-        this.cohesion_slider = createSlider(0, 5, 1, 0.1)
-        this.aligment_slider = createSlider(0, 5, 1, 0.1)
+        this.food_proba = 0.0001
+
+        this.separation_slider = createSlider(0, 2, 1.2, 0.1)
+        this.cohesion_slider = createSlider(0, 2, 1.2, 0.1)
+        this.aligment_slider = createSlider(0, 2, 1, 0.1)
         this.reset_button = createButton("reset")
     }
 
@@ -31,5 +33,9 @@ class Config {
         this.aligment_slider.position(20, this.canvas_height + 80);
         this.reset_button.position(200, this.canvas_height + 20)
         this.reset_button.mouseClicked(() => reset_fn())
+    }
+
+    draw() {
+
     }
 }
