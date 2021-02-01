@@ -1,51 +1,64 @@
+/**
+ *
+ */
 class Word {
     constructor(config) {
         this.config = config
+
+        // Une matrice regroupant l'ensemble des buckets de l'espace
         this.buckets = []
+        // Une liste de l'ensemble des boids de la simulation
         this.boids = []
     }
 
+    /**
+     * Reset la simulation
+     */
     reset() {
-        background(10, 10, 10)
-
-        // création des buckets
+        // Reset de la matrice des buckets
         this.buckets = []
         for (let i=0; i < Math.ceil(windowWidth / this.config.bucket_size); i++)
             this.buckets.push(new Array(Math.ceil(windowHeight / this.config.bucket_size)))
+
+        // Création des buckets
         for (let x=0; x < this.buckets.length; x++) {
             for (let y = 0; y < this.buckets[0].length; y++) {
                 let bucket_width = this.config.bucket_size
                 let bucket_height = this.config.bucket_size
+
+                // Si la taille de la fenetre n'est pas un multiple de config.bucket_size alors le dernier bucket est plus petit
                 if ((x+1) * this.config.bucket_size > windowWidth)
-                    bucket_width = windowWidth - x * this.config.bucket_size;
+                    bucket_width = windowWidth - x * this.config.bucket_size
                 if ((y+1) * this.config.bucket_size > windowHeight)
-                    bucket_height = windowHeight - y * this.config.bucket_size;
+                    bucket_height = windowHeight - y * this.config.bucket_size
 
                 this.buckets[x][y] = new Bucket(x * this.config.bucket_size, y * this.config.bucket_size, bucket_width, bucket_height, this.config)
             }
         }
 
-        const color1 = color(255, 179, 163)
-        const color2 = color(169, 180, 214)
-
+        // Création des boids
+        // DEBUG le premier boid a l'attriut follow à true
         this.boids = []
-        this.boids.push(new Boid(createVector(random(this.config.canvas_wight), random(this.config.canvas_height)),
-            p5.Vector.random2D().setMag(random(2, 4)),
-            10,
-            true,
-            lerpColor(color1, color2, random()),
-            this.config,
-            this.buckets))
+        this.boids.push(new Boid(createVector(random(windowWidth), random(windowHeight)),
+                                 p5.Vector.random2D().setMag(random(2, 4)),
+                                10,
+                                true,
+                                 lerpColor(this.config.color1, this.config.color2, random()),
+                                 this.config,
+                                 this.buckets))
         for (let i=0; i<this.config.nb_boids; i++)
-            this.boids.push(new Boid(createVector(random(this.config.canvas_wight), random(this.config.canvas_height)),
-                p5.Vector.random2D().setMag(random(2, 4)),
-                10,
-                false,
-                lerpColor(color1, color2, random()),
-                this.config,
-                this.buckets))
+            this.boids.push(new Boid(createVector(random(windowWidth), random(windowHeight)),
+                                     p5.Vector.random2D().setMag(random(2, 4)),
+                                     10,
+                                     false,
+                                     lerpColor(this.config.color1, this.config.color2, random()),
+                                     this.config,
+                                     this.buckets))
     }
 
+    /**
+     * Update les buckets et boids
+     */
     update() {
         for (let x=0; x<this.buckets.length; x++) {
             for (let y=0; y<this.buckets[0].length; y++) {
@@ -56,40 +69,38 @@ class Word {
         this.boids.forEach(boid => {
             boid.get_buckets()
             // boid.draw_buckets()
-            // boid.draw_vel()
-            // boid.draw_acc()
             boid.update()
         })
     }
 
+    /**
+     * Déplace et affiche les boids
+     */
     draw() {
         this.boids.forEach(boid => {
             boid.move()
             boid.draw("line")
             // boid.draw_influences()
-            // boid.draw_separation()
-            // boid.draw_coherence()
-            // boid.draw_alignment()
         })
 
         // this.draw_food()
         // this.draw_buckets()
-        // this.draw_vel_field()
     }
 
+    /**
+     * DEBUG affiche les sources de nourriture
+      */
     draw_food() {
         for (let x=0; x<this.buckets.length; x++) {
             for (let y = 0; y < this.buckets[0].length; y++) {
-                const bucket = this.buckets[x][y]
-                if (bucket.food !== null) {
-                    strokeWeight(bucket.food.nb)
-                    stroke(255, 255, 0)
-                    point(bucket.food.pos.x, bucket.food.pos.y)
-                }
+                this.buckets[x][y].draw_food()
             }
         }
     }
 
+    /**
+     * DEBUG affiche les buckets
+     */
     draw_buckets() {
         for (let x=0; x<this.buckets.length; x++) {
             for (let y=0; y<this.buckets[0].length; y++)

@@ -1,33 +1,39 @@
+/**
+ * Classe regroupant les valeurs de paramétrage de la simulation
+ */
 class Config {
     constructor() {
+        // Le nombre de boid à afficher
         this.nb_boids = 2500
-        this.canvas_wight = windowWidth
-        this.canvas_height = windowHeight
 
+        // Couleurs possibles des boids, chaque boid a une couleur composée de ces deux teintes
+        this.color1 = color(255, 179, 163)
+        this.color2 = color(169, 180, 214)
+
+        // La taille en pixel des buckets utilisés pour accélérer la recherche des voisins
         this.bucket_size = 30
 
+        // La taille en pixel du "champ de vision" des boids
         this.influence = 50
+
+        // La vitesse maximale en pixel/frame des boids
         this.max_speed = 4
+
+        // La magnitude maximal des forces appliquées aux boids
         this.max_force = 0.25
+
+        // L'angle du "champ de vision" du boid
         this.field_of_view = radians(180)
 
+        // La probabilité par frame que de la nourriture apparaisse dans un bucket
         this.food_proba = 0.0001
+        // La quantité maximal de nourriture pouvant apparaitre
+        this.max_food_quantity = 15
 
-        this.separation_slider = createSlider(0, 2, 1.2, 0.1)
-        this.cohesion_slider = createSlider(0, 2, 1.2, 0.1)
-        this.aligment_slider = createSlider(0, 2, 1, 0.1)
-        this.reset_button = createButton("reset")
-    }
-
-    setup(reset_fn) {
-        this.separation_slider.position(20, this.canvas_height + 20);
-        this.cohesion_slider.position(20, this.canvas_height + 50);
-        this.aligment_slider.position(20, this.canvas_height + 80);
-        this.reset_button.position(200, this.canvas_height + 20)
-        this.reset_button.mouseClicked(() => reset_fn())
-    }
-
-    draw() {
-
+        // La force des vecteurs de séparation, cohésion, alignement et faim
+        this.separation_strenght = 1.2
+        this.cohesion_strenght = 1.2
+        this.alignment_strenght = 1.
+        this.hunger_strenght = 2.
     }
 }
