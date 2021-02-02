@@ -1,6 +1,8 @@
 let config
 let word
 
+let fr = 25
+
 /**
  * Fonction d'initialisation de la simulation - appelée une seule fois au chargement de la page
  */
@@ -30,8 +32,12 @@ function reset() {
 function draw() {
     background(10, 10, 10, 5)
 
+    // Calcul du moving average du frameRate
+    fr -= fr / 100
+    fr += frameRate() / 100
+
     // update la simulation d'une frame puis affiche l'état courant
-    word.update()
+    word.update(fr)
     word.draw()
 
     draw_framerate()
@@ -50,7 +56,7 @@ function draw_framerate() {
     stroke(200)
     fill(200)
     strokeWeight(1)
-    text(round(frameRate(), 2), 25, 25)
+    text(round(fr, 2), 25, 25)
 }
 
 /**

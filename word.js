@@ -57,14 +57,14 @@ class Word {
     }
 
     /**
-     * Ajuste le nombre de boid pour faire tourner la simulation entre 20 et 30 fps
+     * Ajuste le nombre de boid pour faire tourner la simulation entre 24 et 26 fps
      * Si la simulation est trop lente on supprime des boids sinon on en ajoute
      * A noter que le temps de calcul d'une frame est indépendant de l'état courant de la simulation
      */
-    adjustBoidsNumber() {
-        if (frameRate() < 20)
+    adjustBoidsNumber(frameRate) {
+        if (frameRate < 24)
             this.boids.pop()
-        else if (frameRate() > 30)
+        else if (frameRate > 26)
             this.boids.push(new Boid(createVector(random(windowWidth), random(windowHeight)),
                             p5.Vector.random2D().setMag(random(2, 4)),
                             10,
@@ -77,8 +77,8 @@ class Word {
     /**
      * Update les buckets et boids
      */
-    update() {
-        this.adjustBoidsNumber()
+    update(frameRate) {
+        this.adjustBoidsNumber(frameRate)
 
         for (let x=0; x<this.buckets.length; x++) {
             for (let y=0; y<this.buckets[0].length; y++) {
