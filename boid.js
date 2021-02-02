@@ -72,7 +72,8 @@ class Boid {
      * Déplace le boid d'une frame
      */
     move() {
-        this.position.add(this.velocity)
+        // Si le deltaTime est superieur à 50ms c'est surement que la page web a perdu le focus
+        this.position.add(p5.Vector.mult(this.velocity, min(deltaTime, 50) / 1000))
         this.velocity.add(this.acceleration)
 
         this.velocity.limit(this.config.max_speed)

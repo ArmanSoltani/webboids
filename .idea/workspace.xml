@@ -3,9 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="a279c8e0-eb22-4529-97c9-29d44004ca48" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/boid.js" beforeDir="false" afterPath="$PROJECT_DIR$/boid.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sketch.js" beforeDir="false" afterPath="$PROJECT_DIR$/sketch.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/word.js" beforeDir="false" afterPath="$PROJECT_DIR$/word.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +79,7 @@
       <workItem from="1612107341254" duration="110000" />
       <workItem from="1612109449653" duration="601000" />
       <workItem from="1612204014191" duration="7623000" />
-      <workItem from="1612289160553" duration="1232000" />
+      <workItem from="1612289160553" duration="2199000" />
     </task>
     <task id="LOCAL-00001" summary="debut de le classe boid">
       <created>1608660714320</created>
@@ -180,7 +179,14 @@
       <option name="project" value="LOCAL" />
       <updated>1612218692368</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Ajustement dynamique du nombre de boid de la simulation pour s'assurer que la simulation tourne toujours en temps réel">
+      <created>1612290592060</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1612290592060</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -213,7 +219,8 @@
     <MESSAGE value="refacto  ajout de la classe Bucket" />
     <MESSAGE value="le canvas p5 prend maintenant tout l'espace disponible sur la page du navigateur " />
     <MESSAGE value="refactoring  et doc " />
-    <option name="LAST_COMMIT_MESSAGE" value="refactoring  et doc " />
+    <MESSAGE value="Ajustement dynamique du nombre de boid de la simulation pour s'assurer que la simulation tourne toujours en temps réel" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ajustement dynamique du nombre de boid de la simulation pour s'assurer que la simulation tourne toujours en temps réel" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

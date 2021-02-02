@@ -17,10 +17,10 @@ class Config {
         this.influence = 50
 
         // La vitesse maximale en pixel/frame des boids
-        this.max_speed = 4
+        this.max_speed = 80
 
         // La magnitude maximal des forces appliquées aux boids
-        this.max_force = 0.25
+        this.max_force = 5
 
         // L'angle du "champ de vision" du boid
         this.field_of_view = radians(180)
