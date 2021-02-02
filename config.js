@@ -4,7 +4,7 @@
 class Config {
     constructor() {
         // Le nombre de boid à afficher
-        this.nb_boids = 2500
+        this.nb_boids = 1000
 
         // Couleurs possibles des boids, chaque boid a une couleur composée de ces deux teintes
         this.color1 = color(255, 179, 163)

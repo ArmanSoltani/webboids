@@ -34,21 +34,38 @@ function draw() {
     word.update()
     word.draw()
 
-    // draw_framerate()
+    draw_framerate()
+    draw_boids_number()
 }
 
 /**
- * Affiche le framerate en haut a gauche de la fenetre
+ * DEBUG Affiche le framerate en haut a gauche de la fenetre
  */
 function draw_framerate() {
     stroke(200)
     fill(10)
     rect(0, 0, 100, 40)
+
     textSize(20)
     stroke(200)
     fill(200)
     strokeWeight(1)
     text(round(frameRate(), 2), 25, 25)
+}
+
+/**
+ * DEBUG Affiche le nombre de boid dans la simulation
+ */
+function draw_boids_number() {
+    stroke(200)
+    fill(10)
+    rect(0, 40, 100, 40)
+
+    textSize(20)
+    stroke(200)
+    fill(200)
+    strokeWeight(1)
+    text(word.boids.length, 25, 25 + 40)
 }
 
 /**
